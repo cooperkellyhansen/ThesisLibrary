@@ -19,13 +19,13 @@ from bingo.stats.pareto_front import ParetoFront
 
 # Global parameters
 POP_SIZE = 300
-STACK_SIZE = 20
+STACK_SIZE = 20 # low stack size for quick runs
 MUTATION_PROBABILITY = 0.4
 CROSSOVER_PROBABILITY = 0.4
-MAX_GENS = 1_000
+MAX_GENS = 1_000 # low gens. No need for large number
 FIT_TOL = 1e-3
 use_simplification = True
-regression_metric = 'mse'
+regression_metric = 'rmse'
 clo_algorithm = 'lm'
 # If I want a scalar fitness -> BFGS
 # If I want a vectorized fitness -> lm (faster)
@@ -67,25 +67,16 @@ def print_pareto_front(pareto_front):
         print("%.3e     " % member.fitness, member.get_complexity(), "     f(X_0) =", eq)
 
 def main(X,y):
-    # Build x/y data
-    x_data, y_data = get_training_data('data.xlsx')
-    X_0, X_1, X_2, X_3, X_4 = x_data.T
-
-    #scale y
-
-
     # add super feature(s) here
 
 
     # Agraph generation/variation
-    agraph_gen, crossover, mutation = get_generators(x_data, STACK_SIZE, use_simplification)
+    agraph_gen, crossover, mutation = get_generators(X, STACK_SIZE, use_simplification)
 
     # Explicit evaluation & CLO
     training_data = ExplicitTrainingData(X, y)
     fitness = ExplicitRegression(training_data=training_data, metric=regression_metric)
     local_opt_fitness = ContinuousLocalOptimization(fitness, algorithm=clo_algorithm)
-    # local_opt_fitness = ContinuousLocalOptimization(fitness, algorithm=clo_algorithm,
-    #                                                   param_init_bounds=(0, 0), tol=100)
     evaluator = Evaluation(local_opt_fitness)
 
     # Evolution
@@ -93,10 +84,10 @@ def main(X,y):
                       CROSSOVER_PROBABILITY, MUTATION_PROBABILITY, POP_SIZE)
     pareto_front = ParetoFront(secondary_key=lambda ag: ag.get_complexity(),
                                similarity_function=agraph_similarity)
-    t = time()
+    #t = time()
     island = Island(ea, agraph_gen, POP_SIZE, hall_of_fame=pareto_front)
     island.evolve_until_convergence(max_generations=MAX_GENS, fitness_threshold=FIT_TOL)
-    print(f'Elapsed Time: {round((time() - t) / 60, 2)}min')
+    #print(f'Elapsed Time: {round((time() - t) / 60, 2)}min')
     print_pareto_front(pareto_front)
 
 if __name__ == '__main__':

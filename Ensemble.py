@@ -179,7 +179,7 @@ class Ensemble:
         return EV_grainNames
 
 ########################################################################################################################
-    def analyze(self,desired_data=[],cols=[], structure_type='FCC', sample_num=1, weight=False, weighting_feature_idx=0,
+    def analyze(self,desired_data=[],cols=[], structure_type='FCC', sample_num=1, weight=False, weighting_feature_idx=0, mean_homog=False,
                 bingo=False, hiplot=False, EV=True):
 
         # build ensemble from pkl files
@@ -193,8 +193,17 @@ class Ensemble:
         if EV:
             grainNames = self.FilterByEVFIPs(sample_num)
         elif not EV:
-            # TODO: This needs to be a 2D array
-            grainNames = [k for k, v in sve_obj.max_fips.items()]
+            # TODO: Maybe a more compact version of this
+            grainNames = []
+            path = 'sample_{}/SVE_Pickles'.format(sample_num)
+            for idx, pkl_file in enumerate(os.listdir(path)):
+                with open(os.path.join(path, pkl_file), 'rb') as f:
+                    sve_obj = pickle.load(f)
+                    # find grain names of EV FIPs
+                    # TODO: change the threshold to the one found in SVE class. Must re-run
+                    grainNames_cur = [(num, k) for num, (k, v) in enumerate(sve_obj.max_fips.items(), start=1)]
+                    grainNames.append(grainNames_cur)
+
 
         # loop thru SVEs in ensemble
         X = []
@@ -246,10 +255,22 @@ class Ensemble:
                     weighting_feature = features[weighting_feature_idx]
                     for i in range(0,len(features)-2):
                         features[i] = sum([features[i][idx] * weight for idx, weight in enumerate(weighting_feature)])\
-                                        / sum(weighting_feature)
+                                      / sum(weighting_feature)
+                        # features[i] = sum([features[i][idx] * poly_texture for idx in range(len(features[i]))])\
+                        #                 / sum(poly_texture) # weighting schmid by poly_texture
                     # mean of delta features
-                    features[6] = mean(features[6])
-                    features[7] = mean(features[7])
+                    features[6] = mean(features[6]) # delta schmid
+                    features[7] = mean(features[7]) # delta grain size
+
+                if mean_homog:
+                    features[0] = max(features[0]) # Schmid of grain
+                    features[1] = max(features[1]) # Misorientation
+                    features[2] = max(features[2]) # Shared surface area
+                    features[3] = max(features[3]) # Grain volume
+                    features[4] = max(features[4]) # M' parameter
+                    features[5] = max(features[5]) # Sphericity
+                    features[6] = max(features[6]) # delta Schmid
+                    features[7] = max(features[7]) # delta grain size
 
                 # gather desired features and valid FIPs
                 X_cur = []

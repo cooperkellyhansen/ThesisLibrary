@@ -37,6 +37,7 @@ class SVE:
         self.shared_surface_area = {}
         self.neighbor_misorient = {}
         self.neighbor_mp = {}
+
         self.neighbor_shared_surface_area = {}
 
         self.quaternions = {}

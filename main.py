@@ -32,7 +32,7 @@ import matplotlib.pyplot as plt
 from statistics import mean
 import scipy
 from scipy.stats import genextreme
-#import feature_selection
+import feature_selection as fs
 
 ########################################################################################################################
 ## BUILD ENSEMBLE
@@ -47,9 +47,21 @@ ensemble1 = Ensemble()
 #ensemble1.generalizedEV(fname='sample_1/data/sub_band_averaged_max_per_grain.csv', num_fips=100,analysis_type='individual')
 ########################################################################################################################
 ## ANALYZE DATA
-ensemble1.analyze(desired_data=[0,4,6,7],
-                  cols=['Max Schmid of Grain','mP Slip Trans','Delta Max Schmid','Delta Grain Size','Global Texture Parameter'],
-                  structure_type='HCP', sample_num=1, hiplot=True, EV=True, weight=True,weighting_feature_idx=2)
+ensemble1.analyze(desired_data=[0,1,2,3,4,5,6,7],
+                  cols=['Max Schmid of Grain','Misorientation','Shared Surface Area','Grain Size','mP Slip Trans',
+                        'Sphericity','Delta Max Schmid','Delta Grain Size','Global Texture Parameter'],
+                  structure_type='HCP',
+                  sample_num=1,
+                  hiplot=True,
+                  bingo=True,
+                  EV=False,
+                  weight=False,
+                  mean_homog=True)
+########################################################################################################################
+## BINGO SUPER FEATURES
+fs.main(X,y)
+
+
 
 
 ########################################################################################################################
