@@ -1,0 +1,2 @@
+mat,load_0_E11,load_0_E22,load_0_a,load_0_rate,load_0_overload,load_0_r,load_0_repeats,load_0_msc,num_runs,size,shape,mesh,ms,abaqus_version,step_0_initial,step_0_min,step_0_max,output_intervals,reporting,sve_banded, sve_band_thickness,sve_padding,sim_walltime,sim_cpus,face_bc
+Ti64,1,0,0.006,0.001,0,0,3,TRUE,40,".067,.067,.067","30,30,30",voxel,dream3d,6.16,5.00E-03,2.50E-05,4.00E-01,50,frequency,TRUE,0.002129,0,10,7,"periodic,periodic,periodic"
