@@ -14,8 +14,6 @@ import sklearn as skl
 from sklearn.preprocessing import *
 
 
-
-
 class Ensemble:
     '''
     This class is a representaion of a sample group of SVE's (Statistical Volume Element). It is a wrapper class for
@@ -27,6 +25,8 @@ class Ensemble:
     def __init__(self):
         self.sveDict = {}
         self.minFIP = float
+        self.EV_X = []
+        self.EV_y = []
 
 ########################################################################################################################
     def addSVE(self, sve_obj, sve_num):
@@ -287,6 +287,9 @@ class Ensemble:
             y = np.array(y).reshape((len(y), 1))
             scaler = MinMaxScaler(feature_range=(1, 10))
             y = scaler.fit_transform(y)
+            if EV:
+                self.EV_X = np.asarray(X)
+                self.EV_y = np.asarray(y)
 
             return X, y
 
@@ -295,4 +298,25 @@ class Ensemble:
             df = pd.DataFrame(X, columns=cols)
             df['FIP'] = [item for sublist in y for item in sublist]
             df.to_csv('hi.csv', index=False)
+
+
+########################################################################################################################
+    def parityPlot(self,superfeatures=[], title=''):
+
+        #plot actual FIPs
+        plt.figure()
+        plt.tight_layout()
+        plt.scatter(self.EV_y, self.EV_y, marker='.',label='actual')
+        plt.title(title)
+        plt.xlabel('Actual Max EV FIPs')
+        plt.ylabel('Predicted Max EV FIPs')
+
+        #plot superfeatures
+        marker = itertools.cycle(('^', '+', '.', 'o', '*'))
+        for iter,feat in enumerate(superfeatures,start=1):
+            plt.scatter(self.EV_y,feat,marker=next(marker),alpha=0.5,label='iteration_{}'.format(iter))
+        plt.legend()
+        plt.show()
+
+        #plot fitness values
 
