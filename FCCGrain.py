@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 from numpy import array,float64,dot,cross,zeros,outer
 from numpy.linalg import norm
 
@@ -228,6 +228,8 @@ class FCCGrain(Orientation):
         load_vec = Orientation._normalize(load_vec)
 
         schmid_factors = zeros(NUM_SYSTEMS)
+        normal = zeros((NUM_SYSTEMS,3))
+        direction = zeros((NUM_SYSTEMS,3))
 
         for i,sys in enumerate(FCCGrain.systems):
 
@@ -263,8 +265,10 @@ class FCCGrain(Orientation):
                 xi = FCCGrain._getAngleBetween(rot_fcc_plane,load_vec)
 
             schmid_factors[i] = fabs(cos(psi) * cos(xi))
+            normal[i] = fcc_plane # normals of planes
+            direction[i] = sys # directions of slip
 
-        return schmid_factors
+        return schmid_factors,normal,direction
     ##############################################
     def maxSchmidFactor(O,load_vec):
         '''
@@ -272,8 +276,11 @@ class FCCGrain(Orientation):
         load_vec = 3-D numpy array specifying load axis
         '''
 
-        m = O.schmidFactors(load_vec)
-        return max(m)
+        m,n,d = O.schmidFactors(load_vec)
+        max_schmid = max(m)
+        max_plane = n[np.argmax(np.array(m))]
+        max_direction = d[np.argmax(np.array(m))]
+        return max_schmid,max_plane,max_direction
     ##############################################
     def planeTraces(O,specimen_normal):
         '''
@@ -516,6 +523,7 @@ class FCCGrain(Orientation):
         '''
 
         min_distance = 1.0/ZERO_TOL
+        min_vec = None
 
         for crystal_vec in family:
             rotated_vec = dot(self.R,crystal_vec)
@@ -524,8 +532,10 @@ class FCCGrain(Orientation):
                 distance = pi-distance
             if distance < min_distance:
                 min_distance = distance
+                min_vec = crystal_vec
 
-        return min_distance
+        # Used to return the angle but switched to vector.
+        return min_vec
     ##############################################
     def generateXZDoublePlanarSlip(self,theta):
         '''

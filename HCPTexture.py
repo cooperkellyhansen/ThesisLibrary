@@ -1,5 +1,3 @@
-import numpy as np
-
 import HCPGrain
 from joblib.numpy_pickle_utils import xrange
 

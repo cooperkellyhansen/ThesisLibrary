@@ -192,6 +192,7 @@ class HCPGrain(Orientation):
                     all_tensors = outer(sys,rot_planes[plane_idx])
 
         return all_tensors
+    ##############################################
     def projectSystems(O,plane_normal):
         '''
         apply Orientation object rotation to HCP systems
@@ -221,6 +222,7 @@ class HCPGrain(Orientation):
                 twoD_proj = Orientation._normalize(twoD_proj)
 
         return twoD_proj
+    ##############################################
     def schmidFactors(O,load_vec):
         '''
         returns the Schmid factors (One per slip plane in structure)

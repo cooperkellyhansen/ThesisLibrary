@@ -37,7 +37,6 @@ class SVE:
         self.shared_surface_area = {}
         self.neighbor_misorient = {}
         self.neighbor_mp = {}
-
         self.neighbor_shared_surface_area = {}
 
         self.quaternions = {}
@@ -178,7 +177,7 @@ class SVE:
             self.neighbor_shared_surface_area[grain] = neighbor_labels
 
     #############################################
-    def set_sub_band_data(self,fname,skip_rows):
+    def set_sub_band_data(self,fname):
         '''
         This is a function to retrieve the sub band max FIPs and store them in the
         appropriate attribute. Make sure num_grains is set before this
@@ -188,11 +187,8 @@ class SVE:
         '''
 
         # Read data
-        try:
-            df = pd.read_csv(fname,header=None,skiprows=skip_rows,nrows=self.num_grains,names=['FIP', 'Grain', 'Slip', 'LayerBand', 'SubBand', 'SVE', 'Iteration'])
-            df.set_index('Grain',inplace=True)
-        except:
-            print('num_grains not initialized.')
+        df = pd.read_csv(fname)
+        df.set_index('grain',inplace=True)
 
         # Fill attribute dictionary
         for grain in df.index:
@@ -266,25 +262,31 @@ class SVE:
                     self.sveFCCTexture.toEulerAnglesFile2(f)
                 # TODO: need to add in m' calc to the FCC class
 
-    def calc_mPrime(self):
+    def calc_mPrime(self,structure_type='FCC',to_file=False):
+        # determine texture
+        if structure_type == 'HCP':
+            texture = self.sveHCPTexture
+        else:
+            texture = self.sveFCCTexture
 
         # Calculate the maximum misorientations from the texture class
-        self.sveHCPTexture.calc_mPrime()
+        texture.calc_mPrime()
 
         # Pair the actual neighbors and save
-        for grain in self.sveHCPTexture.mp:
+        for grain in texture.mp:
             neighbor_labels = {}
             try:
                 for neighbor in self.grain_neighbor_link[grain]:
-                    neighbor_labels[neighbor] = self.sveHCPTexture.mp[grain][neighbor - 1]
-                    print(len(self.sveHCPTexture.mp[grain]))
+                    neighbor_labels[neighbor] = texture.mp[grain][neighbor - 1]
+                    print(len(texture.mp[grain]))
                 self.neighbor_mp[grain] = neighbor_labels
             except IndexError:
-                print('Index: ', neighbor - 1)
-        # save to pickle file
+                print('Index Error @: ', neighbor - 1)
 
-        with open('mprime.pkl', 'wb') as f:
-            pickle.dump(self.neighbor_mp, f)
+        # save to pickle file
+        if to_file:
+            with open('mprime.pkl', 'wb') as f:
+                pickle.dump(self.neighbor_mp, f)
 
     #############################################
     def calc_fatigueLife(self,FIP):

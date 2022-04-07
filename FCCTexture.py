@@ -26,8 +26,10 @@ class FCCTexture:
         self.rodDict = {}
         self.neighbors = {}
         self.otherNeighbors = {}
+        self.misorient = {}
+        self.primary_slip = {}
+        self.mp = {}
         self.attrData = {}
-        self.maxMisorient = {}
 
         self.has_ortho_symm = ortho
 
@@ -96,8 +98,7 @@ class FCCTexture:
             self.rodDict[key] = rod
             self.attrData[key] = attr_data[key]
             key += 1
-            ##############################################
-
+    ##############################################
     def toEulerAnglesFile(self, fd, out='rad'):
         '''
         writes a file containing Bunge-Euler angles
@@ -136,10 +137,10 @@ class FCCTexture:
         out = 'rad' or 'deg'
         '''
 
-        for theta in self.orientDict:
+        for idx,theta in enumerate(self.orientDict):
 
-            min_nd_rotated = 1. / ZERO_TOL
-            min_planar_double = 1. / ZERO_TOL
+            #min_nd_rotated = 1. / ZERO_TOL
+            #min_planar_double = 1. / ZERO_TOL
 
             if self.fromEulers:
                 phi1, PHI, phi2 = self.eulerDict[theta]
@@ -147,19 +148,21 @@ class FCCTexture:
                 phi1, PHI, phi2 = self.orientDict[theta].asEulerAngles()
 
             cur_orient = self.orientDict[theta]
+            m,n,d = cur_orient.maxSchmidFactor(load_vec)
+            # find min angle slip direction
+            self.primary_slip['Grain_{}'.format(idx + 1)] = [m,n,d]
 
-            m = cur_orient.maxSchmidFactor(load_vec)
-            min_nd_rotated = cur_orient.getAlignment(FCCGrain.families[100], ND)
-            min_planar_double = cur_orient.getAlignment(FCCGrain.families[111], TD)
+            #min_nd_rotated = cur_orient.getAlignment(FCCGrain.families[100], ND)
+            #min_planar_double = cur_orient.getAlignment(FCCGrain.families[111], TD)
 
             if (phi1, PHI, phi2) != (None, None, None):
                 if out == 'rad':
-                    line = "%0.4f %0.4f %0.4f %0.4f %0.4f %0.4f\n" % (
-                    phi1, PHI, phi2, m, min_nd_rotated, min_planar_double)
+                    line = "%0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f\n" % (
+                    phi1, PHI, phi2, m, n[0],n[1],n[2],d[0],d[1],d[2]) #min_nd_rotated, min_planar_double)
                     fd.write(line)
                 else:
-                    line = "%0.4f %0.4f %0.4f %0.4f %0.4f %0.4f\n" % (
-                    phi1 * R2D, PHI * R2D, phi2 * R2D, m, min_nd_rotated, min_planar_double)
+                    line = "%0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f\n" % (
+                    phi1 * R2D, PHI * R2D, phi2 * R2D, m,n[0],n[1],n[2],d[0],d[1],d[2]) #min_nd_rotated, min_planar_double)
                     fd.write(line)
             else:
                 print("error getting euler angles for angle %0.2f" % theta)
@@ -214,23 +217,26 @@ class FCCTexture:
         #    994, 1213, 1239, 1160, 1268
         #     ]
 
-        min_distance = 1. / ZERO_TOL
-        norm_min_r = 1. / ZERO_TOL
+        #min_distance = 1. / ZERO_TOL
+        #norm_min_r = 1. / ZERO_TOL
 
-        for theta in self.orientDict:
+        for idx,theta in enumerate(self.orientDict):
             cur_orient = self.orientDict[theta]
             if self.fromRodrigues:
                 r1, r2, r3 = self.rodDict[theta]
             else:
                 r1, r2, r3 = cur_orient.asRodrigues()
 
-            m = cur_orient.maxSchmidFactor(RD)
-            min_nd_rotated = cur_orient.getAlignment(FCCGrain.families[100], ND)
-            min_planar_double = cur_orient.getAlignment(FCCGrain.families[111], TD)
+            m,n,d = cur_orient.maxSchmidFactor(RD)
+            # find min angle slip direction
+            self.primary_slip['Grain_{}'.format(idx + 1)] = [m,n,d]
+
+            #min_nd_rotated = cur_orient.getAlignment(FCCGrain.families[100], ND)
+            #min_planar_double = cur_orient.getAlignment(FCCGrain.families[111], TD)
 
             if (r1, r2, r3) != (None, None, None):
                 if (r1 > -ZERO_TOL) and (r2 > -ZERO_TOL):
-                    line = "%0.4f %0.4f %0.4f %0.4f %0.4f %0.4f\n" % (r1, r2, r3, m, min_nd_rotated, min_planar_double)
+                    line = "%0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f\n" % (r1, r2, r3, m,n[0],n[1],n[2],d[0],d[1],d[2]) #min_nd_rotated, min_planar_double)
                     fd.write(line)
             else:
                 print("error getting rodrigues parameters for angle %0.4f" % theta)
@@ -409,8 +415,7 @@ class FCCTexture:
                     self.orientDict[key].fromEulerAngles(eulers)
                     key += 1
 
-                    ##############################################
-
+    ##############################################
     def updateByIntersection(self, other, binsize=pi / 36.):
         '''
         reduce "self" by retaining only those that are closely oriented
@@ -462,14 +467,16 @@ class FCCTexture:
 
         for orient1 in self.orientDict.keys():
             self.neighbors[orient1] = set()
+            self.misorientation[orient1] = []
             for orient2 in self.orientDict.keys():
                 if (orient1 != orient2):
                     misorient = self.orientDict[orient1].misorientation(self.orientDict[orient2])
+                    self.misorientation[orient1].append(misorient)  # gather misorientation angles
                     if misorient <= binsize:
                         self.neighbors[orient1].add(orient2)
 
     ##############################################
-    def calc_maxMisorient(self):
+    def calc_misorient(self):
         '''
         build the "max_misorientation" dictionary of sets
         self.neighbors:
@@ -478,15 +485,57 @@ class FCCTexture:
         '''
 
         for orient1 in self.orientDict.keys():
-            self.maxMisorient['Grain_{}'.format(orient1 + 1)] = []
+            self.misorient['Grain_{}'.format(orient1 + 1)] = []
             for orient2 in self.orientDict.keys():
                 if (orient1 != orient2):
-                    misorient = self.orientDict[orient1].max_misorientation(self.orientDict[orient2])
-                    self.maxMisorient['Grain_{}'.format(orient1 + 1)].append(misorient)  # gather misorientation angles
+                    misorient = self.orientDict[orient1].misorientation(self.orientDict[orient2])
+                    self.misorient['Grain_{}'.format(orient1 + 1)].append(misorient) # gather misorientation angles
                 else:
                     misorient = 0.0
-                    self.maxMisorient['Grain_{}'.format(orient1 + 1)].append(misorient)
+                    self.misorient['Grain_{}'.format(orient1 + 1)].append(misorient)
 
+    ##############################################
+    def calc_mPrime(self):
+        '''
+        This function calculates the m' compatibility parameter for
+        slip transmission (Luster & Morris).
+        :return: None
+        '''
+
+        for orient1 in self.orientDict.keys():
+            self.mp['Grain_{}'.format(orient1 + 1)] = []
+            # find vecs
+            n1 = self.primary_slip['Grain_{}'.format(orient1 + 1)][1]  # normal of first slip system
+            d1 = self.primary_slip['Grain_{}'.format(orient1 + 1)][2] # direction of first slip (Burger's vector)
+            for orient2 in self.orientDict.keys():
+                # find vecs
+                n2 = self.primary_slip['Grain_{}'.format(orient2 + 1)][1] # normal of second slip system
+                d2 = self.primary_slip['Grain_{}'.format(orient2 + 1)][2] # direction of second slip (Burger's vector)
+                if (orient1 != orient2):
+                    #rotate slip normal and direction to grain orientation
+                    n1 = self.orientDict[orient1]._normalize(dot(self.orientDict[orient1].R,n1))
+                    d1 = self.orientDict[orient1]._normalize(dot(self.orientDict[orient1].R,d1))
+                    n2 = self.orientDict[orient2]._normalize(dot(self.orientDict[orient2].R,n2))
+                    d2 = self.orientDict[orient2]._normalize(dot(self.orientDict[orient2].R,d2))
+
+                    # check orthogonality
+                    assert dot(n1,d1) < 1.0E-4, 'Grain vectors not orthogonal'
+                    assert dot(n2,d2) < 1.0E-4, 'Neighbor vectors not orthogonal'
+
+                    #phi
+                    uv1 = n1 / np.linalg.norm(n1)
+                    uv2 = n2 / np.linalg.norm(n2)
+                    cos_phi = dot(uv1, uv2)
+
+                    #kappa
+                    uv1 = d1 / np.linalg.norm(d1)
+                    uv2 = d2 / np.linalg.norm(d2)
+                    cos_kappa = dot(uv1, uv2)
+
+                    mp = cos_phi * cos_kappa
+                    self.mp['Grain_{}'.format(orient1 + 1)].append(mp)
+                else:
+                    self.mp['Grain_{}'.format(orient1 + 1)].append(np.nan)
     ##############################################
     def binCloselyOrientedOther(self, other, binsize):
         '''
@@ -592,3 +641,9 @@ class FCCTexture:
                                      self.misorientation(self.orientDict[-1],
                                                          self.orientDict[cur_theta])
                                      ))
+    ##############################################
+    @staticmethod
+    def _normalize(v):
+        # normalizes an array
+        if norm(v) < 1e-10: return zeros(v.shape)
+        else: return v/norm(v)
