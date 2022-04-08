@@ -69,6 +69,10 @@ class Ensemble:
                     self.sveDict[key].calc_misorientations(structure_type)
                     self.sveDict[key].calc_mPrime()
                     self.sveDict[key].set_sub_band_data('IN625\Loading_Scenario_{}\{}{}\max_grain_FIPs.csv'.format(loading_scenario,loading_scenario,idx))
+                    #if structure_type == 'FCC':
+                        # add in Bishop-Hill calculated Taylor Factor
+                if f.startswith('IN625\Loading_Scenario_{}\{}{}\FIP'.format(loading_scenario,loading_scenario,idx)):
+                    self.sveDict[key].calc_taylorFactor()
 
                     # # create pkl for each sve and store in folder
                     # with open('IN625\Loading_Scenario_{}\SVE_Pickles\sve_{}.pkl'.format(sample_num,idx), 'wb') as f:
@@ -242,15 +246,15 @@ class Ensemble:
                     features[7] = mean(features[7]) # delta grain size
 
                 if mean_homog:
-                    # TODO: loop here
-                    features[0] = max(features[0]) # Schmid of grain
-                    features[1] = max(features[1]) # Misorientation
-                    features[2] = max(features[2]) # Shared surface area
-                    features[3] = max(features[3]) # Grain volume
-                    features[4] = max(features[4]) # M' parameter
-                    features[5] = max(features[5]) # Sphericity
-                    features[6] = max(features[6]) # delta Schmid
-                    features[7] = max(features[7]) # delta grain size
+                    features = [mean(feature) for feature in features]
+                    # features[0] # Schmid of grain
+                    # features[1] # Misorientation
+                    # features[2] # Shared surface area
+                    # features[3] # Grain volume
+                    # features[4] # M' parameter
+                    # features[5] # Sphericity
+                    # features[6] # delta Schmid
+                    # features[7] # delta grain size
 
                 # gather desired features and valid FIPs
                 X_cur = []
@@ -265,7 +269,7 @@ class Ensemble:
 
         if bingo:
             # scale FIPs
-            y = np.log(np.asarray(y))
+            #y = np.log(np.asarray(y))
             #y = np.array(y).reshape((len(y), 1))
             #scaler = MinMaxScaler(feature_range=(1, 10))
             #y = scaler.fit_transform(y)
@@ -277,7 +281,7 @@ class Ensemble:
             # create and return csv
             df = pd.DataFrame(X, columns=cols)
             df['FIP'] = [item for sublist in y for item in sublist]
-            df.to_csv('hi_polytextMultSq.csv', index=False)
+            df.to_csv('hi_abs.csv', index=False)
 
         return X,y,df
 ########################################################################################################################

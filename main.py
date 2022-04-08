@@ -56,10 +56,10 @@ path = 'IN625\Loading_Scenario_A\loadingA'
 with open(path, 'rb') as f:
     loadingA = pickle.load(f)
 
-# loadingA = Ensemble()
-# loadingB = Ensemble()
-# loadingA.fromSVEEnsemble(loading_scenario='A',structure_type='FCC')
-# loadingB.fromSVEEnsemble(loading_scenario='B',structure_type='FCC')
+#loadingA = Ensemble()
+#loadingB = Ensemble()
+#loadingA.fromSVEEnsemble(loading_scenario='A',structure_type='FCC')
+#loadingB.fromSVEEnsemble(loading_scenario='B',structure_type='FCC')
 
 # EV stats
 #loadingA.generalizedEV(num_fips=1000,analysis_type='ensemble')

@@ -282,6 +282,59 @@ class FCCGrain(Orientation):
         max_direction = d[np.argmax(np.array(m))]
         return max_schmid,max_plane,max_direction
     ##############################################
+    def taylorFactors(self):
+        '''
+        A calculation per element strain tensor of the Taylor Factor.
+        This method utilizes the Bishop-Hill theory of stress states
+        to calculate. The strain tensors are the strain-range tensors as used
+        in the FIP calculations where the range is between max and min final peaks.
+
+        :return: None
+        '''
+
+        # Bishop-Hill Stress states
+        col_a = [1, 0, -1, 0, 0, 0, 0.5, 0.5, -1, -1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0, 0, 0, 0, -0.5, -0.5, -0.5, -0.5,
+                 0, 0, 0, 0]
+        col_b = [-1, 1, 0, 0, 0, 0, -1, -1, 0.5, 0.5, 0.5, 0.5, 0, 0, 0, 0, -0.5, -0.5, -0.5, -0.5, 0.5, .5, .5, .5, 0,
+                 0, 0, 0]
+        col_c = [0, -1, 1, 0, 0, 0, .5, .5, .5, .5, -1, -1, -.5, -.5, -.5, -.5, .5, .5, .5, .5, 0, 0, 0, 0, 0, 0, 0, 0]
+        col_f = [0, 0, 0, 1, 0, 0, 0, 0, .5, -.5, 0, 0, .5, -.5, .5, -.5, 0, 0, 0, 0, .5, -.5, .5, -.5, .5, .5, -.5, .5]
+        col_g = [0, 0, 0, 0, 1, 0, .5, -.5, 0, 0, 0, 0, 0, 0, 0, 0, .5, -.5, .5, -.5, .5, .5, -.5, -.5, .5, -.5, .5, .5]
+        col_h = [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, .5, -.5, .5, .5, -.5, -.5, .5, .5, -.5, -.5, 0, 0, 0, 0, -.5, .5, .5, .5]
+
+        A = np.array(col_a) * 6 ** .5
+        B = np.array(col_b) * 6 ** .5
+        C = np.array(col_c) * 6 ** .5
+        F = np.array(col_f) * 6 ** .5
+        G = np.array(col_g) * 6 ** .5
+        H = np.array(col_h) * 6 ** .5
+
+        # grab strain ranges from file
+
+        for grain, e_list in self.strain_range.items():
+            tf_list = []
+            for e in e_list:
+                # rotate from specimen to crystal coord system
+
+                # calculate Von Mises Strain
+                term_a = ((e[0][0]) ** 2 + (e[1][1]) ** 2 + (e[2][2]) ** 2) * 1.5
+                term_b = (3 / 4) * ((2 * e[0][1]) ** 2 + ((2 * e[1][2] ** 2)) + ((2 * e[2][0]) ** 2))
+                term_c = (term_a + term_b) ** 0.5
+                vms = (2 / 3) * term_c
+
+                # Work done
+                dW = (-B * e[0][0] + A * e[1][1] + 2 * F * e[1][2] + 2 * G * e[2][0] + 2 * H * e[0][1])
+                # find max work done
+                max_work = max(abs(dW))
+
+                tf_list.append(max_work / vms)
+
+            self.taylorFactor[grain] = tf_list
+
+        return None
+
+
+    ##############################################
     def planeTraces(O,specimen_normal):
         '''
         returns the traces that the planes make on
