@@ -127,7 +127,7 @@ class FCCTexture:
                 print("error getting euler angles for angle %0.2f" % theta)
 
     ##############################################
-    def toEulerAnglesFile2(self, fd, out='rad', load_vec=RD):
+    def toEulerAnglesFile2(self, fd, out='rad', load_vec=ND):
         '''
         writes a file containing Bunge-Euler angles with
         3 additional columns: max Schmid factor, nearness to

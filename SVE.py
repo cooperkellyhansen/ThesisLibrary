@@ -194,6 +194,23 @@ class SVE:
         for grain in df.index:
             self.max_fips['Grain_{}'.format(grain)] = df.loc[grain, 'FIP'].tolist()
 
+        # # set element coordinates and FIPs
+        # # TODO: Fill dictionary with elements in grain and their coords so distance from centroid can be calculated
+        # # Make dataframe for ease of use
+        # data = pd.read_csv(fname_ss,header=0)
+        #
+        # # Read shared surface area (ssa) portion of feature data
+        # elem_data = pd.read_csv(fname_link, header=None, sep='\n')
+        #
+        # # Fill attribute dictionary
+        # for grain in elem_data.index:
+        #     elems_cur = elem_data.iloc[grain].to_string().split(',')
+        #     elems_cur = [elem.strip() for elem in elems_cur]
+        #     del(elems_cur[0])
+        #     del(elems_cur[-1])
+        #     self.grain_elem_link['Grain_{}'.format(grain + 1)] = list(map(int,elems_cur))
+
+
 
     #############################################
     def calc_misorientations(self,structure='FCC'):
@@ -260,8 +277,7 @@ class SVE:
                     self.sveFCCTexture.toRodriguesFile2(f)
                 elif file_type == 'euler':
                     self.sveFCCTexture.toEulerAnglesFile2(f)
-                # TODO: need to add in m' calc to the FCC class
-
+    #############################################
     def calc_mPrime(self,structure_type='FCC',to_file=False):
         # determine texture
         if structure_type == 'HCP':
@@ -320,54 +336,6 @@ class SVE:
 
         return None
 
-    #############################################
-    def calc_taylorFactor(self):
-        '''
-        A calculation per element strain tensor of the Taylor Factor.
-        This method utilizes the Bishop-Hill theory of stress states
-        to calculate. The strain tensors are the strain-range tensors as used
-        in the FIP calculations where the range is between max and min final peaks.
-
-        :return: None
-        '''
-
-        #Bishop-Hill Stress states
-        col_a = [1, 0, -1, 0, 0, 0, 0.5, 0.5, -1, -1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0, 0, 0, 0, -0.5, -0.5, -0.5, -0.5,
-                 0, 0, 0, 0]
-        col_b = [-1, 1, 0, 0, 0, 0, -1, -1, 0.5, 0.5, 0.5, 0.5, 0, 0, 0, 0, -0.5, -0.5, -0.5, -0.5, 0.5, .5, .5, .5, 0,
-                 0, 0, 0]
-        col_c = [0, -1, 1, 0, 0, 0, .5, .5, .5, .5, -1, -1, -.5, -.5, -.5, -.5, .5, .5, .5, .5, 0, 0, 0, 0, 0, 0, 0, 0]
-        col_f = [0, 0, 0, 1, 0, 0, 0, 0, .5, -.5, 0, 0, .5, -.5, .5, -.5, 0, 0, 0, 0, .5, -.5, .5, -.5, .5, .5, -.5, .5]
-        col_g = [0, 0, 0, 0, 1, 0, .5, -.5, 0, 0, 0, 0, 0, 0, 0, 0, .5, -.5, .5, -.5, .5, .5, -.5, -.5, .5, -.5, .5, .5]
-        col_h = [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, .5, -.5, .5, .5, -.5, -.5, .5, .5, -.5, -.5, 0, 0, 0, 0, -.5, .5, .5, .5]
-
-        A = np.array(col_a) * 6 ** .5
-        B = np.array(col_b) * 6 ** .5
-        C = np.array(col_c) * 6 ** .5
-        F = np.array(col_f) * 6 ** .5
-        G = np.array(col_g) * 6 ** .5
-        H = np.array(col_h) * 6 ** .5
-
-        for grain, e_list in self.strain_range.items():
-            tf_list = []
-            for e in e_list:
-                #calculate Von Mises Strain
-                term_a = ((e[0][0]) ** 2 + (e[1][1]) ** 2 + (e[2][2]) ** 2) * 1.5
-                term_b = (3 / 4) * ((2 * e[0][1]) ** 2 + ((2 * e[1][2] ** 2)) + ((2 * e[2][0]) ** 2))
-                term_c = (term_a + term_b) ** 0.5
-                vms = (2 / 3) * term_c
-
-                # Work done
-                dW = (-B * e[0][0] + A * e[1][1] + 2 * F * e[1][2] + 2 * G * e[2][0] + 2 * H * e[0][1])
-                # find max work done
-                max_work = max(abs(dW))
-
-                tf_list.append(max_work / vms)
-
-            self.taylorFactor[grain] = tf_list
-
-
-        return None
 
     #############################################
     def calc_volumeAvg(self,fname_ss,fname_link):

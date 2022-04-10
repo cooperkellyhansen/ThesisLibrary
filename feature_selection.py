@@ -1,6 +1,6 @@
 """ @author: Sam Parry u1008557 """
-
 import numpy as np
+from numpy import *
 import pandas as pd
 from time import time
 
@@ -47,11 +47,12 @@ def get_generators(x_data, stack_size: int, use_simplification: bool):
     component_generator.add_operator("-")
     component_generator.add_operator("*")
     component_generator.add_operator("/")
-    component_generator.add_operator("cos")
-    component_generator.add_operator("sin")
-    component_generator.add_operator("**")
-    agraph_gen = AGraphGenerator(stack_size, component_generator=component_generator,
-                                 use_simplification=use_simplification)
+    component_generator.add_operator("cosh")
+    component_generator.add_operator("sinh")
+    component_generator.add_operator("exp")
+    component_generator.add_operator("log")
+    component_generator.add_operator("sqrt")
+    agraph_gen = AGraphGenerator(stack_size, component_generator=component_generator,use_simplification=use_simplification)
     crossover = AGraphCrossover()
     mutation = AGraphMutation(component_generator)
     return agraph_gen, crossover, mutation
