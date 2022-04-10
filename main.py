@@ -35,13 +35,12 @@ import scipy
 from scipy.stats import genextreme
 
 #feature engineering stuff
-#import feature_selection as fs
+import feature_selection as fs
 #import run_bingo as bgo
 import featuretools as ft
 
 
 #Normalization
-@staticmethod
 def normalizeit(X):
     # scalar object
     scaler = StandardScaler()
@@ -78,6 +77,7 @@ X,y,micro_data = loadingA.analyze(desired_data=[0,1,2,3,4,5,6,7],
                   EV=False,
                   weight=False,
                   mean_homog=True) # current max not mean
+X = normalizeit(X)
 ########################################################################################################################
 # ## FEATURETOOLS SUPERFEATURES
 # FIP_data = pd.DataFrame(y,columns=['FIPs'])
@@ -125,14 +125,14 @@ X,y,micro_data = loadingA.analyze(desired_data=[0,1,2,3,4,5,6,7],
 
 ########################################################################################################################
 ## BINGO SUPER FEATURES
+# only Schmid and Delta Schmid as inputs
+#X = np.stack((X[:,0],X[:,1]),axis=-1)
+#fs.main(X,y)
 
 # #plot iterations of super feature
 # ensemble1.parityPlot(superfeatures=[X_2,X_3,X_4,X_5,X_6],title='Test Plot DSchmid and Schmid')
 
 #Normal bingo run
-
-#
-
 # #bgo.main(X,y)
 
 #Bingo run with superfeature
