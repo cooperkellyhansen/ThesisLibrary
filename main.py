@@ -35,9 +35,9 @@ import scipy
 from scipy.stats import genextreme
 
 #feature engineering stuff
-import feature_selection as fs
-#import run_bingo as bgo
-import featuretools as ft
+#import feature_selection as fs
+import run_bingo as bgo
+#import featuretools as ft
 
 
 #Normalization
@@ -51,35 +51,45 @@ def normalizeit(X):
 ## BUILD ENSEMBLE
 #instantiate Ensemble object
 loadingA = object
-path = 'IN625\Loading_Scenario_A\loadingA'
+path = 'IN625/Loading_Scenario_A/loadingA'
 with open(path, 'rb') as f:
     loadingA = pickle.load(f)
 
 #loadingA = Ensemble()
 #loadingB = Ensemble()
-#loadingA.fromSVEEnsemble(loading_scenario='A',structure_type='FCC')
-#loadingB.fromSVEEnsemble(loading_scenario='B',structure_type='FCC')
+#loadingA.fromSVEEnsemble(loading_scenario='A',structure_type='FCC',avg_scheme='grain')
+#loadingB.fromSVEEnsemble(loading_scenario='B',structure_type='FCC',avg_scheme='grain')
+
 
 # EV stats
 #loadingA.generalizedEV(num_fips=1000,analysis_type='ensemble')
 #loadingA.generalizedEV(num_fips=100,analysis_type='individual')
 ########################################################################################################################
 # ANALYZE DATA
-columns = ['Max Schmid of Grain','Misorientation','Shared Surface Area','Grain Size','mP Slip Trans',
-                        'Sphericity','Delta Max Schmid','Delta Grain Size']
-#columns = ['Max Schmid of Grain','Delta Max Schmid']
-X,y,micro_data = loadingA.analyze(desired_data=[0,1,2,3,4,5,6,7],
+#columns = ['Max Schmid of Grain','Misorientation','Shared Surface Area','Grain Size','mP Slip Trans',
+#                        'Sphericity','Delta Max Schmid','Delta Grain Size']
+columns = ['Max Schmid of Grain', 'Grain Size','Delta Max Schmid','Delta Grain Size']
+X,y,micro_data = loadingA.analyze(desired_data=[0,3,6,7],
                   cols=columns,
                   structure_type='FCC',
                   hiplot=True,
                   bingo=True,
                   featuretools=True,
-                  EV=False,
+                  EV=True,
                   weight=False,
                   mean_homog=True) # current max not mean
 X = normalizeit(X)
+y = normalizeit(y)
 ########################################################################################################################
 # ## FEATURETOOLS SUPERFEATURES
+from feat import Feat
+
+est = Feat()
+est.fit(X,y)
+
+
+
+
 # FIP_data = pd.DataFrame(y,columns=['FIPs'])
 #
 # micro_data.reset_index(inplace=True)
@@ -133,7 +143,7 @@ X = normalizeit(X)
 # ensemble1.parityPlot(superfeatures=[X_2,X_3,X_4,X_5,X_6],title='Test Plot DSchmid and Schmid')
 
 #Normal bingo run
-# #bgo.main(X,y)
+bgo.main(X,y)
 
 #Bingo run with superfeature
 # X = np.asarray(X)

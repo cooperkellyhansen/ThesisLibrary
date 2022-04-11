@@ -8,7 +8,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import colors
 from scipy.stats import genextreme
-from tqdm import tqdm
 import itertools
 
 import slice_sve as ss
@@ -40,7 +39,7 @@ class Ensemble:
     # TODO: add a to_file boolean that gives the option to put into a file instead of default.
 
 ########################################################################################################################
-    def fromSVEEnsemble(self,structure_type='FCC',loading_scenario='A'):
+    def fromSVEEnsemble(self,structure_type='FCC',loading_scenario='A',avg_scheme='element'):
         '''
         Builds each SVE in an ensemble and stores it in a pickle file.
         fname = file name string.
@@ -51,13 +50,13 @@ class Ensemble:
         csv_files_feature = []
         for i in range(1,41):
             # TODO: path should probably be an input
-            path = 'IN625\Loading_Scenario_{}\{}{}'.format(loading_scenario,loading_scenario,i)  # loading scenario
+            path = 'IN625/Loading_Scenario_{}/{}{}'.format(loading_scenario,loading_scenario,i)  # loading scenario
             csv_files_feature.append(glob.glob(os.path.join(path, "*.csv"))) # sve names
 
         # loop over the list of csv files and set features for each SVE
-        for idx,files in enumerate(tqdm(csv_files_feature, desc ="Building SVE ensemble and dumping to pickle"),start=1):
+        for idx,files in enumerate(csv_files_feature,start=1):
             for f in files:
-                if f.startswith('IN625\Loading_Scenario_{}\{}{}\FeatureData'.format(loading_scenario,loading_scenario,idx)):
+                if f.startswith('IN625/Loading_Scenario_{}/{}{}/FeatureData'.format(loading_scenario,loading_scenario,idx)):
                     key = 'sve_{}'.format(idx)
                     self.sveDict[key] = SVE()
                     # set features from feature data file
@@ -68,18 +67,20 @@ class Ensemble:
                     self.sveDict[key].calc_schmidFactors(structure_type,file_type='euler')
                     self.sveDict[key].calc_misorientations(structure_type)
                     self.sveDict[key].calc_mPrime()
-                    self.sveDict[key].set_sub_band_data('IN625\Loading_Scenario_{}\{}{}\max_grain_FIPs.csv'.format(loading_scenario,loading_scenario,idx))
+                    self.sveDict[key].set_sub_band_data('IN625/Loading_Scenario_{}/{}{}/max_grain_FIPs.csv'.format(loading_scenario,loading_scenario,idx))
+                    if avg_scheme == 'grain':
+                        self.sveDict[key].set_grain_element_data('IN625/Loading_Scenario_{}/{}{}/FIP_df.csv'.format(loading_scenario,loading_scenario,idx))
                     #if structure_type == 'FCC':
                         # add in Bishop-Hill calculated Taylor Factor
-                if f.startswith('IN625\Loading_Scenario_{}\{}{}\FIP'.format(loading_scenario,loading_scenario,idx)):
-                    self.sveDict[key].calc_taylorFactor()
+                    #if f.startswith('IN625\Loading_Scenario_{}\{}{}\FIP'.format(loading_scenario,loading_scenario,idx)):
+                        #self.sveDict[key].calc_taylorFactor()
 
                     # # create pkl for each sve and store in folder
                     # with open('IN625\Loading_Scenario_{}\SVE_Pickles\sve_{}.pkl'.format(sample_num,idx), 'wb') as f:
                     #     pickle.dump(self.sveDict[key],f)
 
         # create pkl for ensemble
-        with open('IN625\Loading_Scenario_{}\loading{}'.format(loading_scenario,loading_scenario), 'wb') as f:
+        with open('IN625/Loading_Scenario_{}/loading{}'.format(loading_scenario,loading_scenario), 'wb') as f:
             pickle.dump(self, f)
 
         return None
@@ -196,7 +197,7 @@ class Ensemble:
         X = []
         y = []
 
-        for idx, (sve_num, sve_obj) in enumerate(tqdm(self.sveDict.items(), desc='Filtering for EV and building data set')):
+        for idx, (sve_num, sve_obj) in enumerate(self.sveDict.items()):
 
             # grab texture object
             if structure_type == 'FCC':
@@ -262,20 +263,22 @@ class Ensemble:
                     if idx in desired_data:
                         X_cur.append(features[idx])
                 X.append(X_cur)
-                y.append([sve_obj.max_fips[grain_name]])
+                # y.append([sve_obj.max_fips[grain_name]])
+                # grain avg FIPs
+                y.append([mean(sve_obj.elem_grain_link['FIPs'][grain_num])])
 
         if featuretools:
             df = pd.DataFrame(X,columns=cols)
 
         if bingo:
             # scale FIPs
-            #y = np.log(np.asarray(y))
+            y = np.log(np.asarray(y))
             #y = np.array(y).reshape((len(y), 1))
             #scaler = MinMaxScaler(feature_range=(1, 10))
             #y = scaler.fit_transform(y)
-            if EV:
-                self.EV_X = np.asarray(X)
-                self.EV_y = np.asarray(y)
+            #if EV:
+            self.EV_X = np.asarray(X)
+            self.EV_y = np.asarray(y)
 
         if hiplot:
             # create and return csv
@@ -309,6 +312,7 @@ class Ensemble:
         for iter,feat in enumerate(superfeatures,start=1):
             plt.scatter(self.EV_y,feat,marker=next(marker),alpha=0.5,label='iteration_{}'.format(iter))
         plt.legend()
+        plt.savefig('/uufs/chpc.utah.edu/common/home/u0736958/Thesis/ThesisLibrary/parity_grain')
         plt.show()
 
         #plot fitness values

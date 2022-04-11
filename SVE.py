@@ -27,7 +27,7 @@ class SVE:
         self.num_elems = 27000 # standard for DREAM.3D SVEs
         self.sve_num = int
 
-        self.grain_elem_link = {}
+        self.elem_grain_link = {}
         self.grain_elem_stress = {} # all stress tensors for elements in grain
         self.grain_elem_strain = {}
         self.vAvg_stress = {}
@@ -210,6 +210,19 @@ class SVE:
         #     del(elems_cur[-1])
         #     self.grain_elem_link['Grain_{}'.format(grain + 1)] = list(map(int,elems_cur))
 
+    #############################################
+    def set_grain_element_data(self,fname):
+        '''
+        Link elements and their FIP with the corresponding grain
+
+        :param fname
+        :return: None
+        '''
+        # Grab elements and FIPs
+        df = pd.read_csv(fname,usecols=['element','grain_id','FIPs'])
+        # link and fill dictionary
+        df = df.groupby('grain_id').agg({'element': list, 'FIPs': list})
+        self.elem_grain_link = df.to_dict()
 
 
     #############################################

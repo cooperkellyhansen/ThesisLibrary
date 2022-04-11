@@ -15,6 +15,7 @@ bingo is imported in the pythonpath on chpc
 import math
 from mpi4py import MPI
 import numpy as np
+from numpy import *
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -32,8 +33,8 @@ from bingo.stats.pareto_front import ParetoFront
 
 #setting the population size of
 POP_SIZE = 256
-STACK_SIZE = 64
-MAX_GENERATIONS = 30000
+STACK_SIZE = 100
+MAX_GENERATIONS = 50000
 FITNESS_THRESHOLD = 1.0E-3
 CHECK_FREQUENCY = 10
 MIN_GENERATIONS = 50
@@ -45,8 +46,8 @@ def print_pareto_front(hall_of_fame):
     print("  FITNESS    COMPLEXITY    EQUATION")
 
     for member in hall_of_fame:
-        eq = member.get_formatted_string("sympy")
-        print('%.3e    ' % member.fitness, member.get_complexity(),'   f(X_0) =', eq)
+        #eq = member.get_formatted_string("sympy")
+        print('%.3e    ' % member.fitness, member.get_complexity(),'   f(X_0) =', member)
 ########################################################################################################################
 # Plot Pareto front if desired
 # def plot_pareto_front(hall_of_fame):
@@ -84,15 +85,17 @@ def execute_generational_steps(X_in,y_in):
     component_generator.add_operator("-")
     component_generator.add_operator("*")
     component_generator.add_operator("/")
-    component_generator.add_operator("cos")
-    component_generator.add_operator("sin")
-    component_generator.add_operator("^")
+    component_generator.add_operator("cosh")
+    component_generator.add_operator("sinh")
+    component_generator.add_operator("log")
+    component_generator.add_operator("exp")
+    component_generator.add_operator("sqrt")
 
     agraph_generator = AGraphGenerator(STACK_SIZE, component_generator,use_simplification=True)
     crossover = AGraphCrossover()
     mutation = AGraphMutation(component_generator)
 
-    fitness = ExplicitRegression(training_data=training_data, metric='mean squared error')
+    fitness = ExplicitRegression(training_data=training_data, metric='root mean squared error')
     local_opt_fitness = ContinuousLocalOptimization(fitness, algorithm='lm')
     evaluator = Evaluation(local_opt_fitness)
 
@@ -107,7 +110,7 @@ def execute_generational_steps(X_in,y_in):
 
     optim_result = archipelago.evolve_until_convergence(MAX_GENERATIONS, FITNESS_THRESHOLD,
             convergence_check_frequency=CHECK_FREQUENCY, min_generations=MIN_GENERATIONS,
-            checkpoint_base_name='checkpoint', num_checkpoints=2)
+            checkpoint_base_name='checkpoint_100_gEV', num_checkpoints=2)
 
     if optim_result.success:
         if rank == 0:
