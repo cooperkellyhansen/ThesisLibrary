@@ -1,0 +1,3 @@
+srun: Job step aborted: Waiting up to 62 seconds for job step to finish.
+slurmstepd: error: *** STEP 4230720.0 ON notch273 CANCELLED AT 2022-04-10T13:48:15 ***
+slurmstepd: error: *** JOB 4230720 ON notch273 CANCELLED AT 2022-04-10T13:48:15 ***

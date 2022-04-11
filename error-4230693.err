@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/uufs/chpc.utah.edu/common/home/u0736958/Thesis/ThesisLibrary/main.py", line 55, in <module>
+    with open(path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: 'IN625\\Loading_Scenario_A\\loadingA'

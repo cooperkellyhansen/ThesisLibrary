@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/uufs/chpc.utah.edu/common/home/u0736958/Thesis/ThesisLibrary/main.py", line 79, in <module>
+    mean_homog=True) # current max not mean
+  File "/uufs/chpc.utah.edu/common/home/u0736958/Thesis/ThesisLibrary/Ensemble.py", line 268, in analyze
+    y.append([mean(sve_obj.elem_grain_link[grain_name][1])])
+AttributeError: 'SVE' object has no attribute 'elem_grain_link'

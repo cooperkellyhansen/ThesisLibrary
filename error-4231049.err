@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "/uufs/chpc.utah.edu/common/home/u0736958/Thesis/ThesisLibrary/main.py", line 80, in <module>
+    X = normalizeit(X)
+  File "/uufs/chpc.utah.edu/common/home/u0736958/Thesis/ThesisLibrary/main.py", line 47, in normalizeit
+    X = normalize(scaler.fit_transform(X))
+  File "/uufs/chpc.utah.edu/common/home/u6019587/.venv/bingovenv_v2/lib/python3.7/site-packages/sklearn/base.py", line 847, in fit_transform
+    return self.fit(X, **fit_params).transform(X)
+  File "/uufs/chpc.utah.edu/common/home/u6019587/.venv/bingovenv_v2/lib/python3.7/site-packages/sklearn/preprocessing/_data.py", line 806, in fit
+    return self.partial_fit(X, y, sample_weight)
+  File "/uufs/chpc.utah.edu/common/home/u6019587/.venv/bingovenv_v2/lib/python3.7/site-packages/sklearn/preprocessing/_data.py", line 847, in partial_fit
+    reset=first_call,
+  File "/uufs/chpc.utah.edu/common/home/u6019587/.venv/bingovenv_v2/lib/python3.7/site-packages/sklearn/base.py", line 561, in _validate_data
+    X = check_array(X, **check_params)
+  File "/uufs/chpc.utah.edu/common/home/u6019587/.venv/bingovenv_v2/lib/python3.7/site-packages/sklearn/utils/validation.py", line 765, in check_array
+    "if it contains a single sample.".format(array)
+ValueError: Expected 2D array, got 1D array instead:
+array=[].
+Reshape your data either using array.reshape(-1, 1) if your data has a single feature or array.reshape(1, -1) if it contains a single sample.

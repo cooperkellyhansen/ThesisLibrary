@@ -1,0 +1,21 @@
+OptimizeResult(success=False, status=2, message='The maximum number of generational steps (50000) occurred', ngen=50000, fitness=2.717255368608351, time=18072.039524, ea_diagnostics=EaDiagnosticsSummary(beneficial_crossover_rate=0.017581781915109933, detrimental_crossover_rate=0.6574049522837837, beneficial_mutation_rate=0.0944092794377014, detrimental_mutation_rate=0.7452996083536038, beneficial_crossover_mutation_rate=0.017957970478858058, detrimental_crossover_mutation_rate=0.7213619388866566))
+Generation:  50000
+  FITNESS    COMPLEXITY    EQUATION
+2.656e+00     19    f(X_0) = -17.109418 + (X_0)(0.572038 + X_1 + X_7) + (-1.164872)(exp((2)(X_6))) + sqrt(X_6) - (X_7)
+2.657e+00     18    f(X_0) = -15.578973 + (X_0)(0.761781 + X_1 + X_7) + (-2.834237)(exp(sinh(X_6))) + sqrt(X_6) - (X_7)
+2.658e+00     17    f(X_0) = -15.578973 + (X_0)(0.761781 + X_1) + (-2.834237)(exp(sinh(X_6))) + sqrt(X_6) - (X_7)
+2.660e+00     16    f(X_0) = (0.849181)(-21.178992 + X_0 + (X_6)((-3.242033 - (X_6))(cosh(X_6)) - (X_3)) - (X_7))
+2.660e+00     15    f(X_0) = -15.260553 + (-0.505994)((4.233310 + X_7 + exp(X_7) - (X_0))(exp(sinh(X_6))))
+2.661e+00     14    f(X_0) = -17.966084 + X_0 + (X_6)((-2.717788 - (X_6))(cosh(X_6)) - (X_3)) - (X_7)
+2.661e+00     13    f(X_0) = -15.236946 + (-0.765463)((3.532802 + X_7 - (X_0))(exp(sinh(X_6))))
+2.663e+00     12    f(X_0) = (0.798907)(-18.776798 + X_0 - ((3.679528 + X_7)(exp(X_6))))
+2.667e+00     11    f(X_0) = X_0 + (-4.725343)(3.825311 + (X_6)(sqrt(X_6))) - (X_7)
+2.667e+00     10    f(X_0) = -14.976222 + X_0 + (-2.966296)(exp(X_6)) - (X_7)
+2.674e+00     9    f(X_0) = -16.290475 + (-1.582636 - (X_6))(exp(X_6)) - (X_7)
+2.674e+00     8    f(X_0) = -15.140313 - ((2.804912 + X_7)(exp(X_6)))
+2.687e+00     7    f(X_0) = -16.688805 - (X_7 + sinh(exp(X_6)))
+2.691e+00     6    f(X_0) = -16.324751 - (X_6 + cosh(exp(X_6)))
+2.705e+00     5    f(X_0) = -16.679785 - (sinh(exp(X_6)))
+2.793e+00     4    f(X_0) = -17.017538 - (exp(X_6))
+2.813e+00     3    f(X_0) = -18.084793 - (X_6)
+2.929e+00     1    f(X_0) = -18.062156
