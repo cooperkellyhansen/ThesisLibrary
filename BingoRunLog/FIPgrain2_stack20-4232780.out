@@ -1,0 +1,18 @@
+OptimizeResult(success=False, status=2, message='The maximum number of generational steps (50000) occurred', ngen=50000, fitness=0.940296567779358, time=20432.059825, ea_diagnostics=EaDiagnosticsSummary(beneficial_crossover_rate=0.018733013379654242, detrimental_crossover_rate=0.641901453268544, beneficial_mutation_rate=0.09087162378604746, detrimental_mutation_rate=0.728295348891719, beneficial_crossover_mutation_rate=0.0178975643912686, detrimental_crossover_mutation_rate=0.7140976439273246))
+Generation:  50000
+  FITNESS    COMPLEXITY    EQUATION
+9.372e-01     20    f(X_0) = (0.123218)(9.350161 + (-2.119552)((7.124906 - (X_0))((log(7.124906) - (X_2))^(-1))) + (-1.444365 + X_2)(X_3))
+9.372e-01     17    f(X_0) = 0.557803 + (-0.054882)((3.465302 - (X_0))(-0.522437 + X_3 + (2.389900)(exp(sinh(X_2)))))
+9.372e-01     15    f(X_0) = 0.658240 + (-0.045615)((4.161618 - (X_0))(X_3 + (2.394224)(exp(sinh(X_2)))))
+9.375e-01     14    f(X_0) = 0.714213 + (-0.043115)((4.415727 - (X_0))(X_3 + (2.723672)(exp(X_2))))
+9.382e-01     13    f(X_0) = (-0.149018)(-4.453021 + X_3 - (X_0)) + (-0.455490)(exp(sinh(X_2)))
+9.383e-01     12    f(X_0) = (0.519810)((-0.293480)(-4.719578 + X_3 - (X_0)) - (exp(X_2)))
+9.394e-01     11    f(X_0) = (-0.438029)(-1.478584 + (0.420171)(X_3) + exp(sinh(X_2)))
+9.397e-01     10    f(X_0) = (-0.153371)(-2.603753 + X_2 + X_3 + sinh(exp(X_2)))
+9.417e-01     9    f(X_0) = (-0.252287)(-1.677777 + X_2 + X_3 + exp(X_2))
+9.433e-01     7    f(X_0) = -0.891654 + sqrt(cosh(X_3) - (X_2))
+9.441e-01     6    f(X_0) = sqrt(X_2 - ((X_2)(X_2))) - (sqrt((X_2)(X_2)))
+9.462e-01     5    f(X_0) = 1.162784 - (sqrt(exp(X_2)))
+9.517e-01     4    f(X_0) = (-0.416240)(-0.416240 + X_2)
+9.571e-01     3    f(X_0) = (-0.578796)(X_2)
+9.875e-01     1    f(X_0) = 0.157922

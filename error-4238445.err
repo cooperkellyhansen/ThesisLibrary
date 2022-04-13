@@ -1,0 +1,24 @@
+/uufs/chpc.utah.edu/common/home/u1164746/bingo/bingo/evaluation/fitness_function.py:19: RuntimeWarning: overflow encountered in square
+  return np.sqrt(np.mean(np.square(vector)))
+/uufs/chpc.utah.edu/common/home/u1164746/bingo/bingo/evolutionary_optimizers/fitness_predictor.py:76: RuntimeWarning: invalid value encountered in double_scalars
+  - predicted_fitness)
+/uufs/chpc.utah.edu/common/home/u6019587/.venv/bingovenv_v2/lib/python3.7/site-packages/numpy/core/_methods.py:229: RuntimeWarning: invalid value encountered in subtract
+  x = asanyarray(arr - arrmean)
+/uufs/chpc.utah.edu/common/home/u6019587/.venv/bingovenv_v2/lib/python3.7/site-packages/numpy/core/_methods.py:178: RuntimeWarning: overflow encountered in reduce
+  ret = umr_sum(arr, axis, dtype, out, keepdims, where=where)
+Traceback (most recent call last):
+  File "/uufs/chpc.utah.edu/common/home/u0736958/Thesis/ThesisLibrary/main.py", line 108, in <module>
+    bgo.main(X,y)
+  File "/uufs/chpc.utah.edu/common/home/u0736958/Thesis/ThesisLibrary/run_bingo.py", line 126, in main
+    execute_generational_steps(X,y)
+  File "/uufs/chpc.utah.edu/common/home/u0736958/Thesis/ThesisLibrary/run_bingo.py", line 113, in execute_generational_steps
+    checkpoint_base_name='checkpoint', num_checkpoints=2)
+  File "/uufs/chpc.utah.edu/common/home/u1164746/bingo/bingo/util/argument_validation.py", line 84, in do_validation
+    return func(*pargs, **kwargs)
+  File "/uufs/chpc.utah.edu/common/home/u1164746/bingo/bingo/evolutionary_optimizers/evolutionary_optimizer.py", line 143, in evolve_until_convergence
+    self._update_checkpoints(checkpoint_base_name, num_checkpoints)
+  File "/uufs/chpc.utah.edu/common/home/u1164746/bingo/bingo/evolutionary_optimizers/evolutionary_optimizer.py", line 200, in _update_checkpoints
+    self._remove_stale_checkpoint()
+  File "/uufs/chpc.utah.edu/common/home/u1164746/bingo/bingo/evolutionary_optimizers/parallel_archipelago.py", line 276, in _remove_stale_checkpoint
+    os.remove(self._previous_checkpoints.pop(0))
+FileNotFoundError: [Errno 2] No such file or directory: 'checkpoint_1370.pkl'

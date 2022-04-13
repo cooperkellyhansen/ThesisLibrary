@@ -1,5 +1,6 @@
 import HCPTexture,FCCTexture
 
+from numpy import *
 import pandas as pd
 import pickle
 from HCPTexture import *
@@ -423,6 +424,33 @@ class SVE:
 
         return None
 
+    #####################################
+    def calc_fip_dist_from_boundary(self):
+
+        # generate all element node coords
+        node_coords = [] # assume nodes start at [0,0,0] and increment by 2s.
+        for z in range (0,51,2):
+            for y in range (0,51,2):
+                for x in range (0,51,2):
+                    node_coords[elem] = [x,y,z]
+        elem = 1
+        elem_coords = {} # assuming element centroids start at [1,1,1] and go by 2s 
+        for z in range(1,50,2):
+            for y in range(1,50,2):
+                for x in range(1,50,2):
+                    elem_coords[elem] = [x,y,z]
+                    elem +=1
+
+        # loop through grains in SVE
+        for grain in range(1,self.num_grains+1):
+            node_set = set()
+            boundary_nodes = [node for node in self.elem_grain_link['elements'][grain] if node in node_set or node_set.add(node)]  
+            # find element containing FIP
+            #max_fip_elem = self.elem_grain_link[]argmax(self.elem_grain_link['FIPs'][grain])
+
+            
+
+        
 
 
 
@@ -431,26 +459,5 @@ class SVE:
 
 
 
-
-    # # separate stress and strain data
-    # def get_stress_strain_data(sample_num):
-    #     stress_strain_data_dict = {}
-    #     # read csv data
-    #     for i in range(0, 40):
-    #         # find the file name using the first part of the string
-    #         for file in os.listdir('c:/Users/coope/PycharmProjects/pythonProject/sample_' + str(sample_num)):
-    #             file_str = 'Results_main_' + str(i)
-    #             if file.startswith(file_str):
-    #                 file_name = file
-    #         stress_strain_data = pd.read_csv(
-    #             'c:/Users/coope/PycharmProjects/pythonProject/sample_' + str(sample_num) + '/' + file_name)
-    #         # pull out desired columns
-    #         data_cur = stress_strain_data.loc[:, :]
-    #         # assign desired columns to the corresponding SVE number
-    #         SVE_num = i
-    #         SVE_name = 'SVE_{}'.format(SVE_num)  # set SVE name in dictionary
-    #         stress_strain_data_dict[SVE_name] = data_cur  # set vals for corresponding SVE
-    #
-    #     return stress_strain_data_dict
 
 

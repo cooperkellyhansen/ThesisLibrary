@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "/uufs/chpc.utah.edu/common/home/u0736958/Thesis/DataRanch/pythonProject/main.py", line 7, in <module>
-    import SVE
-  File "/uufs/chpc.utah.edu/common/home/u0736958/Thesis/DataRanch/pythonProject/SVE.py", line 1, in <module>
-    import HCPTexture,FCCTexture
-ModuleNotFoundError: No module named 'FCCTexture'

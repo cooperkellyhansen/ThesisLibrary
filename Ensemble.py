@@ -72,8 +72,8 @@ class Ensemble:
                         self.sveDict[key].set_grain_element_data('IN625/Loading_Scenario_{}/{}{}/FIP_df.csv'.format(loading_scenario,loading_scenario,idx))
                     #if structure_type == 'FCC':
                         # add in Bishop-Hill calculated Taylor Factor
-                    #if f.startswith('IN625\Loading_Scenario_{}\{}{}\FIP'.format(loading_scenario,loading_scenario,idx)):
-                        #self.sveDict[key].calc_taylorFactor()
+                        #if f.startswith('IN625\Loading_Scenario_{}\{}{}\FIP'.format(loading_scenario,loading_scenario,idx)):
+                            #self.sveDict[key].calc_taylorFactor()
 
                     # # create pkl for each sve and store in folder
                     # with open('IN625\Loading_Scenario_{}\SVE_Pickles\sve_{}.pkl'.format(sample_num,idx), 'wb') as f:
@@ -264,9 +264,13 @@ class Ensemble:
                         X_cur.append(features[idx])
                 X.append(X_cur)
                 # y.append([sve_obj.max_fips[grain_name]])
-                # grain avg FIPs
-                y.append([mean(sve_obj.elem_grain_link['FIPs'][grain_num])])
-
+                # grain avg FIPsi
+                y.append([sum(sve_obj.elem_grain_link['FIPs'][grain_num])/len(sve_obj.elem_grain_link['FIPs'][grain_num])])
+                #print('sum/len:',[sum(sve_obj.elem_grain_link['FIPs'][grain_num])/len(sve_obj.elem_grain_link['FIPs'][grain_num])])
+                #print('mean:',mean(sve_obj.elem_grain_link['FIPs'][grain_num]))
+        #print(self.sveDict['sve_1'].elem_grain_link['element'][1])
+        #print(self.sveDict['sve_1'].elem_grain_link['FIPs'][1])
+        #print(sum(self.sveDict['sve_1'].elem_grain_link['FIPs'][1])/len(self.sveDict['sve_1'].elem_grain_link['FIPs'][1]))
         if featuretools:
             df = pd.DataFrame(X,columns=cols)
 
@@ -288,7 +292,7 @@ class Ensemble:
 
         return X,y,df
 ########################################################################################################################
-    def parityPlot(self,superfeatures=[], title=''):
+    def parityPlot(self,y,superfeatures=[],title=''):
         '''
         This function takes in the different superfeature iterations or a single prediction array from bingo and
         creates a parity plot between the actual max FIPs and the predicted max FIPs
@@ -302,7 +306,7 @@ class Ensemble:
         #plot actual FIPs
         plt.figure()
         plt.tight_layout()
-        plt.scatter(self.EV_y, self.EV_y, marker='.',label='actual')
+        plt.scatter(y, y, marker='.',label='actual')
         plt.title(title)
         plt.xlabel('Actual Max EV FIPs')
         plt.ylabel('Predicted Max EV FIPs')
@@ -310,7 +314,7 @@ class Ensemble:
         #plot superfeatures
         marker = itertools.cycle(('^', '+', '.', 'o', '*'))
         for iter,feat in enumerate(superfeatures,start=1):
-            plt.scatter(self.EV_y,feat,marker=next(marker),alpha=0.5,label='iteration_{}'.format(iter))
+            plt.scatter(y,feat,marker=next(marker),alpha=0.5,label='iteration_{}'.format(iter))
         plt.legend()
         plt.savefig('/uufs/chpc.utah.edu/common/home/u0736958/Thesis/ThesisLibrary/parity_grain')
         plt.show()

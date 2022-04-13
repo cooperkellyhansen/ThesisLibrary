@@ -1,3 +1,0 @@
-srun: Job step aborted: Waiting up to 62 seconds for job step to finish.
-slurmstepd: error: *** STEP 4230734.0 ON notch274 CANCELLED AT 2022-04-11T01:57:48 DUE TO TIME LIMIT ***
-slurmstepd: error: *** JOB 4230734 ON notch274 CANCELLED AT 2022-04-11T01:57:48 DUE TO TIME LIMIT ***
