@@ -170,18 +170,18 @@ class Ensemble:
 
         # Open saved SVE objects
         EV_grainNames = []
-        path = 'IN625\Loading_Scenario_{}\loading{}'.format(loading_scenario,loading_scenario)
+        path = 'IN625/Loading_Scenario_{}/loading{}'.format(loading_scenario,loading_scenario)
         # find grain names of EV FIPs
         for (sve_num,sve_obj) in self.sveDict.items():
             # TODO: change the threshold to the one found in SVE class. Must re-run
-            grainNames_cur = [(num,k) for num, (k, v) in enumerate(sve_obj.max_fips.items(),start=1) if v >= 1.5E-10]
+            grainNames_cur = [(num,k) for num, (k, v) in enumerate(sve_obj.max_fips.items(),start=1) if v >= 1.5E-9]
             EV_grainNames.append(grainNames_cur)
 
         return EV_grainNames
 
 ########################################################################################################################
     def analyze(self, desired_data=[],cols=[], structure_type='FCC', loading_scenario='A', weight=False, weighting_feature_idx=0, mean_homog=False,
-                bingo=False, hiplot=False,featuretools=False, EV=False):
+                bingo=False, hiplot=False, EV=False):
 
         # set grain names for either grains with EV FIPs or all
         if EV:
@@ -210,12 +210,14 @@ class Ensemble:
                 # find valid neighbors
                 grainNumbers = [num[0] for num in grainNames[idx]]
                 neighbors = [neighbor for neighbor in sve_obj.grain_neighbor_link[grain_name]
-                             if neighbor in grainNumbers]  # threshold neighbors schmid factor
+                             if neighbor in grainNumbers] # threshold neighbors schmid factor
                 if not neighbors:
                     continue #if no valid neighbors exist, skip.
 
                 # gather/calculate all currently known features
                 # schmid factor of grain
+                schmid_of_grain = texture.primary_slip[grain_name][0]
+                #schmid of neighbors
                 schmid = [texture.primary_slip['Grain_{}'.format(neighbor)][0] for neighbor in neighbors]
                 # misorientations
                 mis = [sve_obj.neighbor_misorient[grain_name][neighbor] for neighbor in neighbors]
@@ -232,7 +234,7 @@ class Ensemble:
                 # difference in grain size between neighboring grains (neighbor - grain)
                 dgsize = [(nvolume - sve_obj.volume[grain_name]) for nvolume in [sve_obj.volume['Grain_{}'.format(neighbor)] for neighbor in neighbors]]
 
-                features = [schmid,mis,ssa,gsize,mp,sphere,dschmid,dgsize]
+                features = [schmid_of_grain,mis,ssa,gsize,mp,sphere,dschmid,dgsize]
 
                 if weight:
                     # weight the data
@@ -247,32 +249,21 @@ class Ensemble:
                     features[7] = mean(features[7]) # delta grain size
 
                 if mean_homog:
-                    features = [mean(feature) for feature in features]
-                    # features[0] # Schmid of grain
-                    # features[1] # Misorientation
-                    # features[2] # Shared surface area
-                    # features[3] # Grain volume
-                    # features[4] # M' parameter
-                    # features[5] # Sphericity
-                    # features[6] # delta Schmid
-                    # features[7] # delta grain size
-
+                    for idx in range(1,len(features)):
+                        features[idx] = mean(features[idx])
+                         
                 # gather desired features and valid FIPs
                 X_cur = []
                 for idx in desired_data:
                     if idx in desired_data:
                         X_cur.append(features[idx])
                 X.append(X_cur)
-                # y.append([sve_obj.max_fips[grain_name]])
-                # grain avg FIPsi
-                y.append([sum(sve_obj.elem_grain_link['FIPs'][grain_num])/len(sve_obj.elem_grain_link['FIPs'][grain_num])])
-                #print('sum/len:',[sum(sve_obj.elem_grain_link['FIPs'][grain_num])/len(sve_obj.elem_grain_link['FIPs'][grain_num])])
-                #print('mean:',mean(sve_obj.elem_grain_link['FIPs'][grain_num]))
-        #print(self.sveDict['sve_1'].elem_grain_link['element'][1])
-        #print(self.sveDict['sve_1'].elem_grain_link['FIPs'][1])
-        #print(sum(self.sveDict['sve_1'].elem_grain_link['FIPs'][1])/len(self.sveDict['sve_1'].elem_grain_link['FIPs'][1]))
-        if featuretools:
-            df = pd.DataFrame(X,columns=cols)
+                #y.append([sve_obj.max_fips[grain_name]])
+                # grain avg FIPs
+                #y.append(mean([abs(fip) for fip in sve_obj.elem_grain_link['FIPs'][grain_num]]))
+                # top 10 element FIPs averaged
+                sort_FIPs = sorted([abs(fip) for fip in sve_obj.elem_grain_link['FIPs'][grain_num]],reverse=True)[:10]
+                y.append([mean(sort_FIPs)])
 
         if bingo:
             # scale FIPs

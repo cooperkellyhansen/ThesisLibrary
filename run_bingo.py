@@ -33,7 +33,7 @@ from bingo.stats.pareto_front import ParetoFront
 
 #setting the population size of
 POP_SIZE = 256
-STACK_SIZE = 64
+STACK_SIZE = 20
 MAX_GENERATIONS = 30000
 FITNESS_THRESHOLD = 1.0E-3
 CHECK_FREQUENCY = 10
@@ -110,7 +110,7 @@ def execute_generational_steps(X_in,y_in):
 
     optim_result = archipelago.evolve_until_convergence(MAX_GENERATIONS, FITNESS_THRESHOLD,
             convergence_check_frequency=CHECK_FREQUENCY, min_generations=MIN_GENERATIONS,
-            checkpoint_base_name='checkpoint_4', num_checkpoints=2)
+            checkpoint_base_name='checkpoint_singleDVol', num_checkpoints=2)
 
     if optim_result.success:
         if rank == 0:

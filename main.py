@@ -51,7 +51,7 @@ def normalizeit(X):
 ## BUILD ENSEMBLE
 #instantiate Ensemble object
 loadingB = object
-path = 'IN625/Loading_Scenario_A/loadingA'
+path = 'IN625/Loading_Scenario_B/loadingB'
 with open(path, 'rb') as f:
     loadingB = pickle.load(f)
 
@@ -69,12 +69,16 @@ with open(path, 'rb') as f:
 columns = ['Max Schmid of Grain','Misorientation','Shared Surface Area','Grain Size','mP Slip Trans',
                         'Sphericity','Delta Max Schmid','Delta Grain Size']
 #columns = ['Max Schmid of Grain', 'Grain Size','Delta Max Schmid','Delta Grain Size']
+#columns = ['Max Schmid of Grain']
+#columns = ['Grain Size']
+#columns = ['Delta Max Schmid']
+#columns = ['Delta Grain Size']
+
 X,y,micro_data = loadingB.analyze(desired_data=[0,1,2,3,4,5,6,7],
                   cols=columns,
                   structure_type='FCC',
                   hiplot=True,
                   bingo=True,
-                  featuretools=True,
                   EV=False,
                   weight=False,
                   mean_homog=True) # current max not mean
@@ -105,7 +109,7 @@ X = normalizeit(X)
 
 
 #Normal bingo run
-bgo.main(X,y)
+#bgo.main(X,y)
 
 #pred = -18.021111 + (6.830460)*(X_1s) + (100.830851 + (0.983479)*((-34.095161 + (-2)*(X_1s) + (7.310745)*(((X_2s)**(-1))*(log(sqrt(X_2s)))))*(log(7.310745) + sqrt(X_2s))))*(sqrt((7.310745)**(((X_2s)**(-1))*(log(sqrt(X_2s))))))
 #loadingA.parityPlot(y,superfeatures=[pred],title='Super Features')

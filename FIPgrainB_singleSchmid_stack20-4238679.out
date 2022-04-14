@@ -1,0 +1,5 @@
+OptimizeResult(success=False, status=2, message='The maximum number of generational steps (30000) occurred', ngen=30000, fitness=1.1078319677149533, time=6292.978343, ea_diagnostics=EaDiagnosticsSummary(beneficial_crossover_rate=0.00985442948125399, detrimental_crossover_rate=0.6555338579059216, beneficial_mutation_rate=0.07341380918740963, detrimental_mutation_rate=0.7375752662452644, beneficial_crossover_mutation_rate=0.013812455685004131, detrimental_crossover_mutation_rate=0.7063143583839093))
+Generation:  30000
+  FITNESS    COMPLEXITY    EQUATION
+1.103e+00     5    f(X_0) = -8.792089 + (0.047214)(X_0)
+1.104e+00     1    f(X_0) = -8.783031

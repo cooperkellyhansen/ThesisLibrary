@@ -434,21 +434,27 @@ class SVE:
                 for x in range (0,51,2):
                     node_coords[elem] = [x,y,z]
         elem = 1
-        elem_coords = {} # assuming element centroids start at [1,1,1] and go by 2s 
+        elem_coords = {} # assuming element centroids start at [1,1,1] and go by 2s
         for z in range(1,50,2):
             for y in range(1,50,2):
                 for x in range(1,50,2):
                     elem_coords[elem] = [x,y,z]
                     elem +=1
 
+        #build each element with node coords
+      
+
         # loop through grains in SVE
         for grain in range(1,self.num_grains+1):
             node_set = set()
-            boundary_nodes = [node for node in self.elem_grain_link['elements'][grain] if node in node_set or node_set.add(node)]  
+            boundary_nodes = [node for node in self.elem_grain_link['element'][grain] if node in node_set or node_set.add(node)]  
             # find element containing FIP
-            #max_fip_elem = self.elem_grain_link[]argmax(self.elem_grain_link['FIPs'][grain])
-
-            
+            max_fip_elem = self.elem_grain_link['element'][argmax(self.elem_grain_link['FIPs'][grain])]
+            # find coords of max FIP element
+            max_fip_elem_coords = elem_coords[max_fip_elem]
+            # find minimum distance to boundary nodes
+            min_dist = np.linalg.norm()
+    
 
         
 

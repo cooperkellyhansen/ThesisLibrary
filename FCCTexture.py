@@ -162,7 +162,7 @@ class FCCTexture:
                     fd.write(line)
                 else:
                     line = "%0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f %0.4f\n" % (
-                    phi1 * R2D, PHI * R2D, phi2 * R2D, m,n[0],n[1],n[2],d[0],d[1],d[2]) #min_nd_rotated, min_planar_double)
+                    phi1 * R2D, PHI * R2D, phi2 * R2D, m, n[0],n[1],n[2],d[0],d[1],d[2]) #min_nd_rotated, min_planar_double)
                     fd.write(line)
             else:
                 print("error getting euler angles for angle %0.2f" % theta)

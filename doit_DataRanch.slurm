@@ -1,7 +1,7 @@
 #!/bin/csh
 
 #SBATCH --time=12:00:00 # walltime, abbreviated by -t
-#SBATCH -o FIPgrainB_stack64-%j.out # name of the stdout
+#SBATCH -o FIPgrainB_singleDVol_stack20-%j.out # name of the stdout
 #SBATCH -e error-%j.err # name of the stderr
 #SBATCH --nodes=1 # number of nodes you're reserving
 #SBATCH --ntasks=1 # number of MPI tasks, abbreviated by -n # additional information for allocated clusters 

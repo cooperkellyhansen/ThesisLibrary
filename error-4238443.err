@@ -1,4 +1,0 @@
-  File "/uufs/chpc.utah.edu/common/home/u0736958/Thesis/ThesisLibrary/main.py", line 70
-    'Sphericity','Delta Max Schmid','Delta Grain Size']
-    ^
-IndentationError: unexpected indent
