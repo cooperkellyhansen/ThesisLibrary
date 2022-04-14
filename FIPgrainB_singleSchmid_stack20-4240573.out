@@ -1,0 +1,8 @@
+OptimizeResult(success=False, status=2, message='The maximum number of generational steps (30000) occurred', ngen=30000, fitness=0.4368654083545567, time=8198.716447, ea_diagnostics=EaDiagnosticsSummary(beneficial_crossover_rate=0.008308619169593261, detrimental_crossover_rate=0.7056853323854076, beneficial_mutation_rate=0.06688234732327354, detrimental_mutation_rate=0.8004100175380715, beneficial_crossover_mutation_rate=0.011808342087938826, detrimental_crossover_mutation_rate=0.7421938892175539))
+Generation:  30000
+  FITNESS    COMPLEXITY    EQUATION
+4.368e-01     16    f(X_0) = (1722673.530911)(exp(X_0)) - (((X_0)^(-1))((5514840.817575 + (-2261938.076063)((exp(X_0))^(-1)) - (X_0))(sqrt(X_0))))
+4.368e-01     15    f(X_0) = 4220740.038278 + (-914036.948066)(exp(X_0)) - ((X_0)(2615866.068901 + (-2391348.392677)((exp(X_0))^(-1)) - (X_0)))
+4.368e-01     13    f(X_0) = (1224326.796459)(exp(X_0)) - ((X_0)(3919473.192728 + (-1607591.229314)((exp(X_0))^(-1)) - (X_0)))
+4.368e-01     5    f(X_0) = -7.161280 + (0.014535)(X_0)
+4.370e-01     1    f(X_0) = -7.158492

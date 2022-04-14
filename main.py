@@ -51,7 +51,7 @@ def normalizeit(X):
 ## BUILD ENSEMBLE
 #instantiate Ensemble object
 loadingB = object
-path = 'IN625/Loading_Scenario_B/loadingB'
+path = '/uufs/chpc.utah.edu/common/home/u0736958/Thesis/ThesisLibrary/IN625/Loading_Scenario_B/loadingB'
 with open(path, 'rb') as f:
     loadingB = pickle.load(f)
 
@@ -83,6 +83,17 @@ X,y,micro_data = loadingB.analyze(desired_data=[0,1,2,3,4,5,6,7],
                   weight=False,
                   mean_homog=True) # current max not mean
 X = normalizeit(X)
+
+fig = plt.figure()
+plt.tight_layout()
+ax = fig.add_subplot(111,projection='3d')
+x = [loadingB.sveDict['sve_1'].node_coords[node][0] for node in loadingB.sveDict['sve_1'].grain_boundary_nodes['Grain_1']]
+y = [loadingB.sveDict['sve_1'].node_coords[node][1] for node in loadingB.sveDict['sve_1'].grain_boundary_nodes['Grain_1']]
+z = [loadingB.sveDict['sve_1'].node_coords[node][2] for node in loadingB.sveDict['sve_1'].grain_boundary_nodes['Grain_1']]
+ax.scatter(x,y,z,marker='.')
+
+plt.savefig('/uufs/chpc.utah.edu/common/home/u0736958/Thesis/ThesisLibrary/grain_rep')
+
 ########################################################################################################################
 ## BINGO SUPER FEATURES
 # only Schmid and Delta Schmid as inputs

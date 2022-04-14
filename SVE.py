@@ -31,6 +31,9 @@ class SVE:
         self.elem_grain_link = {}
         self.grain_elem_stress = {} # all stress tensors for elements in grain
         self.grain_elem_strain = {}
+        self.grain_boundary_nodes = {}
+        self.node_coords = {}
+        self.elem_coords = {}
         self.vAvg_stress = {}
         self.vAvg_strain = {}
         self.strain_range = {}
@@ -428,32 +431,64 @@ class SVE:
     def calc_fip_dist_from_boundary(self):
 
         # generate all element node coords
-        node_coords = [] # assume nodes start at [0,0,0] and increment by 2s.
+        node = 1
+        # assume nodes start at [0,0,0] and increment by 2s.
         for z in range (0,51,2):
             for y in range (0,51,2):
                 for x in range (0,51,2):
-                    node_coords[elem] = [x,y,z]
+                    self.node_coords[node] = [x,y,z]
+                    node += 1
+
         elem = 1
-        elem_coords = {} # assuming element centroids start at [1,1,1] and go by 2s
+        # assuming element centroids start at [1,1,1] and go by 2s
         for z in range(1,50,2):
             for y in range(1,50,2):
                 for x in range(1,50,2):
-                    elem_coords[elem] = [x,y,z]
-                    elem +=1
+                    self.elem_coords[elem] = [x,y,z]
+                    elem +=1            
 
         #build each element with node coords
-      
+        elem_nodes = {} # [[node1], [node2]....]
+        val = list(self.node_coords.values())
+        for elem,coords in self.elem_coords.items():
+            cur = [] 
+            #bottom nodes
+            cur.append(val.index([coords[0]-1,coords[1]-1,coords[2]-1])+1)
+            cur.append(val.index([coords[0]-1,coords[1]-1,coords[2]+1])+1)
+            cur.append(val.index([coords[0]-1,coords[1]+1,coords[2]-1])+1)
+            cur.append(val.index([coords[0]-1,coords[1]+1,coords[2]+1])+1)
+            #top nodes
+            cur.append(val.index([coords[0]+1,coords[1]+1,coords[2]+1])+1)
+            cur.append(val.index([coords[0]+1,coords[1]+1,coords[2]+1])+1)
+            cur.append(val.index([coords[0]+1,coords[1]+1,coords[2]+1])+1)
+            cur.append(val.index([coords[0]+1,coords[1]+1,coords[2]+1])+1)
+            elem_nodes[elem] = cur
 
         # loop through grains in SVE
         for grain in range(1,self.num_grains+1):
-            node_set = set()
-            boundary_nodes = [node for node in self.elem_grain_link['element'][grain] if node in node_set or node_set.add(node)]  
+            grain_node_set = set()
+            # find all node names in grain
+            grain_node_list = [elem_nodes[elem] for elem in self.elem_grain_link['element'][grain]]
+            grain_node_list = [item for sublist in grain_node_list for item in sublist] #flatten
+            # update set
+            grain_node_set.update(grain_node_list)
+            # find all node names in all neighbors
+            neighbors = [neighbor for neighbor in self.grain_neighbor_link['Grain_{}'.format(grain)]]
+            #set for neighbor nodes
+            neighbor_node_set = set()
+            for neighbor in neighbors:
+                neighbor_node_list = [elem_nodes[elem] for elem in self.elem_grain_link['element'][neighbor]]
+                neighbor_node_list = [item for sublist in neighbor_node_list for item in sublist] #flatten
+                neighbor_node_set.update(neighbor_node_list)
+                
+            self.grain_boundary_nodes['Grain_{}'.format(grain)] = grain_node_set.intersection(neighbor_node_set)
+
             # find element containing FIP
-            max_fip_elem = self.elem_grain_link['element'][argmax(self.elem_grain_link['FIPs'][grain])]
+            #max_fip_elem = self.elem_grain_link['element'][argmax(self.elem_grain_link['FIPs'][grain])]
             # find coords of max FIP element
-            max_fip_elem_coords = elem_coords[max_fip_elem]
+            #max_fip_elem_coords = self.elem_coords[max_fip_elem]
             # find minimum distance to boundary nodes
-            min_dist = np.linalg.norm()
+            #min_dist = np.linalg.norm()
     
 
         

@@ -50,13 +50,13 @@ class Ensemble:
         csv_files_feature = []
         for i in range(1,41):
             # TODO: path should probably be an input
-            path = 'IN625/Loading_Scenario_{}/{}{}'.format(loading_scenario,loading_scenario,i)  # loading scenario
+            path = '/uufs/chpc.utah.edu/common/home/u0736958/Thesis/ThesisLibrary/IN625/Loading_Scenario_{}/{}{}'.format(loading_scenario,loading_scenario,i)  # loading scenario
             csv_files_feature.append(glob.glob(os.path.join(path, "*.csv"))) # sve names
 
         # loop over the list of csv files and set features for each SVE
         for idx,files in enumerate(csv_files_feature,start=1):
             for f in files:
-                if f.startswith('IN625/Loading_Scenario_{}/{}{}/FeatureData'.format(loading_scenario,loading_scenario,idx)):
+                if f.startswith('/uufs/chpc.utah.edu/common/home/u0736958/Thesis/ThesisLibrary/IN625/Loading_Scenario_{}/{}{}/FeatureData'.format(loading_scenario,loading_scenario,idx)):
                     key = 'sve_{}'.format(idx)
                     self.sveDict[key] = SVE()
                     # set features from feature data file
@@ -67,9 +67,10 @@ class Ensemble:
                     self.sveDict[key].calc_schmidFactors(structure_type,file_type='euler')
                     self.sveDict[key].calc_misorientations(structure_type)
                     self.sveDict[key].calc_mPrime()
-                    self.sveDict[key].set_sub_band_data('IN625/Loading_Scenario_{}/{}{}/max_grain_FIPs.csv'.format(loading_scenario,loading_scenario,idx))
+                    self.sveDict[key].set_sub_band_data('/uufs/chpc.utah.edu/common/home/u0736958/Thesis/ThesisLibrary/IN625/Loading_Scenario_{}/{}{}/max_grain_FIPs.csv'.format(loading_scenario,loading_scenario,idx))
                     if avg_scheme == 'grain':
-                        self.sveDict[key].set_grain_element_data('IN625/Loading_Scenario_{}/{}{}/FIP_df.csv'.format(loading_scenario,loading_scenario,idx))
+                        self.sveDict[key].set_grain_element_data('/uufs/chpc.utah.edu/common/home/u0736958/Thesis/ThesisLibrary/IN625/Loading_Scenario_{}/{}{}/FIP_df.csv'.format(loading_scenario,loading_scenario,idx))
+                    self.sveDict[key].calc_fip_dist_from_boundary()
                     #if structure_type == 'FCC':
                         # add in Bishop-Hill calculated Taylor Factor
                         #if f.startswith('IN625\Loading_Scenario_{}\{}{}\FIP'.format(loading_scenario,loading_scenario,idx)):
@@ -80,7 +81,7 @@ class Ensemble:
                     #     pickle.dump(self.sveDict[key],f)
 
         # create pkl for ensemble
-        with open('IN625/Loading_Scenario_{}/loading{}'.format(loading_scenario,loading_scenario), 'wb') as f:
+        with open('/uufs/chpc.utah.edu/common/home/u0736958/Thesis/ThesisLibrary/IN625/Loading_Scenario_{}/loading{}'.format(loading_scenario,loading_scenario), 'wb') as f:
             pickle.dump(self, f)
 
         return None
@@ -170,7 +171,7 @@ class Ensemble:
 
         # Open saved SVE objects
         EV_grainNames = []
-        path = 'IN625/Loading_Scenario_{}/loading{}'.format(loading_scenario,loading_scenario)
+        path = '/uufs/chpc.utah.edu/common/home/u0736958/Thesis/ThesisLibrary/IN625/Loading_Scenario_{}/loading{}'.format(loading_scenario,loading_scenario)
         # find grain names of EV FIPs
         for (sve_num,sve_obj) in self.sveDict.items():
             # TODO: change the threshold to the one found in SVE class. Must re-run
@@ -258,12 +259,13 @@ class Ensemble:
                     if idx in desired_data:
                         X_cur.append(features[idx])
                 X.append(X_cur)
+                # max fips per grain
                 #y.append([sve_obj.max_fips[grain_name]])
                 # grain avg FIPs
-                #y.append(mean([abs(fip) for fip in sve_obj.elem_grain_link['FIPs'][grain_num]]))
+                y.append([mean([abs(fip) for fip in sve_obj.elem_grain_link['FIPs'][grain_num]])])
                 # top 10 element FIPs averaged
-                sort_FIPs = sorted([abs(fip) for fip in sve_obj.elem_grain_link['FIPs'][grain_num]],reverse=True)[:10]
-                y.append([mean(sort_FIPs)])
+                #sort_FIPs = sorted([abs(fip) for fip in sve_obj.elem_grain_link['FIPs'][grain_num]],reverse=True)[:10]
+                #y.append([mean(sort_FIPs)])
 
         if bingo:
             # scale FIPs
@@ -279,7 +281,7 @@ class Ensemble:
             # create and return csv
             df = pd.DataFrame(X, columns=cols)
             df['FIP'] = [item for sublist in y for item in sublist]
-            df.to_csv('hi_abs.csv', index=False)
+            df.to_csv('hi_mistake.csv', index=False)
 
         return X,y,df
 ########################################################################################################################
@@ -322,7 +324,7 @@ class Ensemble:
         '''
 
 
-        path = 'sample_{}/SVE_Pickles/sve_{}.pkl'.format(sample_num,sve_num)
+        path = '/uufs/chpc.utah.edu/common/home/u0736958/Thesis/ThesisLibrary/sample_{}/SVE_Pickles/sve_{}.pkl'.format(sample_num,sve_num)
         with open(path, 'rb') as f:
             sve_obj = pickle.load(f)
             self.addSVE(sve_obj, sve_num)
